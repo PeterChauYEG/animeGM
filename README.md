@@ -20,7 +20,16 @@ $ jupyter lab
 ```
 $ tensorboard --logdir=log
 ```
-**NOTE**: You may need to configure tensorboard's `main.py` to use the CPU
+**NOTE**: You may need to configure tensorboard's `main.py` to use the CPU. 
+
+```
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
+```
+
+
+
 6. Monitor your GPU usage:
 ```
 $ nvidia-smi -l 2

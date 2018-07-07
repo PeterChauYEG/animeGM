@@ -109,21 +109,39 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>animeGN - Style images as anime</h1>
+        <div className="header">
+          <h1 className="title">animeGN</h1>
+          <p className="subtitle">Style images as anime</p>
+        </div>
 
-        <div>
-          <div>
-            <p>Example Image</p>
-            <canvas ref="exampleCanvas" width={104} height={104} />
+        <div className="imagesContainer">
+          <div className="imageContainer">
+            <canvas
+              className="image"
+              height={104}
+              ref="exampleCanvas"
+              width={104}
+            />
+            <p className="label">Example Image</p>
           </div>
 
-          <div>
-            <p>Styled Image</p>
-            <canvas ref="styledCanvas" width={104} height={104} />
+          <div className="imageContainer">
+            <canvas
+              className="image"
+              height={104}
+              ref="styledCanvas"
+              width={104}
+            />
+            <p className="label">Styled Image</p>
           </div>
         </div>
 
-        <input type='button' value='Style Image!' onClick={this.styleImage} />
+        <input
+          className="button"
+          onClick={this.styleImage}
+          type='button'
+          value='STYLE IMAGE!'
+        />
       </div>
     );
   }

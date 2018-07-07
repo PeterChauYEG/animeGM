@@ -162,7 +162,10 @@ class App extends Component {
                 ref="exampleCanvas"
                 width={displayDim}
               />
-              <p className="label">Source Image</p>
+              <p className="label">
+                Source Image
+                <span role='img' aria-label='above'>☝️</span>
+              </p>
             </div>
 
             <div className="imageContainer">
@@ -172,7 +175,10 @@ class App extends Component {
                 ref="styledCanvas"
                 width={displayDim}
               />
-              <p className="label">Styled Image</p>
+              <p className="label">
+                <span role='img' aria-label='above'>☝️</span>
+                Styled Image
+              </p>
             </div>
           </div>
 
@@ -183,7 +189,7 @@ class App extends Component {
           className={'button'}
           onClick={this.styleImage}
           type='button'
-          value='STYLE IMAGE!'
+          value='s t y l e i m a g e 💁‍♀️'
         />
       </div>
     );

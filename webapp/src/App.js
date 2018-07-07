@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import Dropzone from 'react-dropzone'
 import * as tf from '@tensorflow/tfjs'
+
 import './App.css'
 
 const displayDim = 256
@@ -16,6 +18,7 @@ class App extends Component {
       model: null
     }
 
+    this.onDrop = this.onDrop.bind(this)
     this.styleImage = this.styleImage.bind(this)
   }
 
@@ -25,8 +28,44 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // generate example image from path
+    const image = this.generateImage(examplePath)
+
     // draw example image
-    this.updateCanvas(examplePath)
+    this.updateCanvas(image)
+  }
+
+  // deprocess the image so that it's in the format which we can render
+  deprocessImage(tensor) {
+
+    // resize the image to displayDim
+    let deprocessedTensor = tf.image.resizeBilinear(
+                              tensor,
+                              [displayDim, displayDim]
+                            )
+
+    // convert the 4D tensor to 3D so that we can render it
+    deprocessedTensor = deprocessedTensor.reshape([displayDim, displayDim, 3])
+
+    return deprocessedTensor
+  }
+
+  // generates ImageData from a path
+  generateImage(path) {
+    // create image
+    var image = new Image()
+
+    // bind an image to it
+    image.src = path
+
+    return image
+  }
+
+  // grabs image data from a canvas using it's context
+  getImageData (ctx) {
+    var imageData = ctx.getImageData(0, 0, displayDim, displayDim)
+
+    this.setState({ imageData })
   }
 
   // loads the model from a file then stores the ref to state
@@ -36,32 +75,12 @@ class App extends Component {
     loadModel().then(model => this.setState({ model }))
   }
 
-  // draw an image on to a canvas using it's path
-  updateCanvas(imagePath) {
-    // grab canvas context
-    const ctx = this.refs.exampleCanvas.getContext('2d')
+  // handles ondrop event from drop zone
+  onDrop(files) {
+    // generate example image from path
+    const image = this.generateImage(files[0].preview)
 
-    // create image
-    var image = new Image()
-
-    // bind an image to it
-    image.src = imagePath
-
-    // attach a cb for when the image loads
-    image.onload = () => {
-      // draw the image onto the canvas
-      ctx.drawImage(image, 0, 0)
-
-      // grabs image data from a canvas
-      this.getImageData(ctx)
-    }
-  }
-
-  // grabs image data from a canvas using it's context
-  getImageData (ctx) {
-    var imageData = ctx.getImageData(0, 0, displayDim, displayDim)
-
-    this.setState({ imageData })
+    this.updateCanvas(image)
   }
 
   // preprocess the image so that it's in the format we expect
@@ -87,21 +106,6 @@ class App extends Component {
     return preprocessedTensor
   }
 
-  // deprocess the image so that it's in the format which we can render
-  deprocessImage(tensor) {
-
-    // resize the image to displayDim
-    let deprocessedTensor = tf.image.resizeBilinear(
-                              tensor,
-                              [displayDim, displayDim]
-                            )
-
-    // convert the 4D tensor to 3D so that we can render it
-    deprocessedTensor = deprocessedTensor.reshape([displayDim, displayDim, 3])
-
-    return deprocessedTensor
-  }
-
   // styles an image and draws it to a canvas
   styleImage () {
     const { imageData, model } = this.state
@@ -124,6 +128,21 @@ class App extends Component {
     tf.toPixels(reconstruction, this.refs.styledCanvas)
   }
 
+  // draw an image on to a canvas using it's path
+  updateCanvas(image) {
+    // grab canvas context
+    const ctx = this.refs.exampleCanvas.getContext('2d')
+
+    // attach a cb for when the image loads
+    image.onload = () => {
+      // draw the image onto the canvas
+      ctx.drawImage(image, 0, 0)
+
+      // grabs image data from a canvas
+      this.getImageData(ctx)
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -132,27 +151,33 @@ class App extends Component {
           <p className="subtitle">Style images as anime</p>
         </div>
 
-        <div className="imagesContainer">
-          <div className="imageContainer">
-            <canvas
-              className="image"
-              height={displayDim}
-              ref="exampleCanvas"
-              width={displayDim}
-            />
-            <p className="label">Example Image</p>
+        <Dropzone
+          className="dropContainer"
+          onDrop={this.onDrop}>
+          <div className="imagesContainer">
+            <div className="imageContainer">
+              <canvas
+                className="image"
+                height={displayDim}
+                ref="exampleCanvas"
+                width={displayDim}
+              />
+              <p className="label">Source Image</p>
+            </div>
+
+            <div className="imageContainer">
+              <canvas
+                className="image"
+                height={displayDim}
+                ref="styledCanvas"
+                width={displayDim}
+              />
+              <p className="label">Styled Image</p>
+            </div>
           </div>
 
-          <div className="imageContainer">
-            <canvas
-              className="image"
-              height={displayDim}
-              ref="styledCanvas"
-              width={displayDim}
-            />
-            <p className="label">Styled Image</p>
-          </div>
-        </div>
+          <p className='text'>Drop an image and style it</p>
+        </Dropzone>
 
         <input
           className={'button'}

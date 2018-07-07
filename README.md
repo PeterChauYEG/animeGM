@@ -38,6 +38,9 @@ $ nvidia-smi -l 2
 ```
 $ htop
 ```
-
+8. Convert model to layers format for tensorflowjs usage with:
+```
+tensorflowjs_converter --input_format keras models/model.hdf5 layersModel
+```
 
 

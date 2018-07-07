@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import * as tf from '@tensorflow/tfjs'
 import './App.css'
 
+const displayDim = 256
+const examplePath = '/example-256.png'
+const inputDim = 104
+const modelPath = '/layersModel/model.json'
+
 class App extends Component {
   constructor() {
     super()
@@ -16,12 +21,12 @@ class App extends Component {
 
   componentWillMount() {
     // load the model
-    this.loadModel('/layersModel/model.json')
+    this.loadModel(modelPath)
   }
 
   componentDidMount() {
     // draw example image
-    this.updateCanvas('/example-104.png')
+    this.updateCanvas(examplePath)
   }
 
   // loads the model from a file then stores the ref to state
@@ -54,7 +59,7 @@ class App extends Component {
 
   // grabs image data from a canvas using it's context
   getImageData (ctx) {
-    var imageData = ctx.getImageData(0, 0, 104, 104)
+    var imageData = ctx.getImageData(0, 0, displayDim, displayDim)
 
     this.setState({ imageData })
   }
@@ -62,24 +67,37 @@ class App extends Component {
   // preprocess the image so that it's in the format we expect
   preprocessImage(imageData) {
     // convert the image data into a tf tensor (3D)
-    let processedTensor = tf.fromPixels(imageData)
+    let preprocessedTensor = tf.fromPixels(imageData)
 
     // cast the data from int32 to float32
-    processedTensor = tf.cast(processedTensor, 'float32')
+    preprocessedTensor = tf.cast(preprocessedTensor, 'float32')
 
     // normalize the data since it was previously int32
-    processedTensor = tf.div(processedTensor, 255)
+    preprocessedTensor = tf.div(preprocessedTensor, 255)
+
+    // resize the image to the inputDim
+    preprocessedTensor = tf.image.resizeBilinear(
+                        preprocessedTensor,
+                        [inputDim, inputDim]
+                      )
 
     // convert the image to the expected input for this model (4D)
-    processedTensor = processedTensor.reshape([-1, 104, 104, 3])
+    preprocessedTensor = preprocessedTensor.reshape([-1, inputDim, inputDim, 3])
 
-    return processedTensor
+    return preprocessedTensor
   }
 
   // deprocess the image so that it's in the format which we can render
   deprocessImage(tensor) {
+
+    // resize the image to displayDim
+    let deprocessedTensor = tf.image.resizeBilinear(
+                              tensor,
+                              [displayDim, displayDim]
+                            )
+
     // convert the 4D tensor to 3D so that we can render it
-    let deprocessedTensor = tensor.reshape([104, 104, 3])
+    deprocessedTensor = deprocessedTensor.reshape([displayDim, displayDim, 3])
 
     return deprocessedTensor
   }
@@ -118,9 +136,9 @@ class App extends Component {
           <div className="imageContainer">
             <canvas
               className="image"
-              height={104}
+              height={displayDim}
               ref="exampleCanvas"
-              width={104}
+              width={displayDim}
             />
             <p className="label">Example Image</p>
           </div>
@@ -128,16 +146,16 @@ class App extends Component {
           <div className="imageContainer">
             <canvas
               className="image"
-              height={104}
+              height={displayDim}
               ref="styledCanvas"
-              width={104}
+              width={displayDim}
             />
             <p className="label">Styled Image</p>
           </div>
         </div>
 
         <input
-          className="button"
+          className={'button'}
           onClick={this.styleImage}
           type='button'
           value='STYLE IMAGE!'

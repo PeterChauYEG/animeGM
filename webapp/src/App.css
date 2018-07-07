@@ -14,6 +14,7 @@
   background-color: white;
   border: 2px dashed lightcoral;
   color: lightcoral;
+  cursor: pointer;
   display: flex;
   min-height: 10vmin;
   min-width: 20vmin;
@@ -26,6 +27,20 @@
   background-color: lightcoral;
   border: 2px dashed white;
   color: white;
+}
+
+.buttonLoading {
+  align-items: center;
+  background-color: gainsboro;
+  border: 2px dashed white;
+  color: white;
+  cursor: default;
+  display: flex;
+  min-height: 10vmin;
+  min-width: 20vmin;
+  justify-content: center;
+  padding: 8px;
+  font-size: 1.5em;
 }
 
 .header {
@@ -65,12 +80,11 @@
 .title {
   font-family: 'Monoton', cursive;
   font-size: 3em;
-  margin-bottom: 5vmin;
+  margin-bottom: 2.5vmin;
   text-align: center;
 }
 
 .subtitle {
   font-size: 2em;
-  padding-right: 20vw;
-  text-align: right;
+  text-align: center;
 }

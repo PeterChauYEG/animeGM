@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import Dropzone from 'react-dropzone'
 import * as tf from '@tensorflow/tfjs'
 
+import examplePath from './exampleImage.png'
+
 import './App.css'
 
 const displayDim = 256
-const examplePath = '/example-256.png'
 const inputDim = 104
-const modelPath = '/layersModel/model.json'
+
+const modelPath = 'https://res.cloudinary.com/dqza9dw1h/raw/upload/v1531441276/laboratory%20one/ml/animeGN/model.json'
 
 class App extends Component {
   constructor() {
@@ -70,9 +72,11 @@ class App extends Component {
 
   // loads the model from a file then stores the ref to state
   loadModel(modelPath) {
-    const loadModel = async () => await tf.loadModel(modelPath)
+    const loadModel = async () =>  await tf.loadModel(modelPath)
 
-    loadModel().then(model => this.setState({ model }))
+    loadModel()
+      .then(model => {this.setState({ model })})
+      .catch(error => console.log(error))
   }
 
   // handles ondrop event from drop zone

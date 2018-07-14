@@ -4,5 +4,6 @@ danbooru2017/
 danbooru2017-sfw512px/
 log/
 checkpoints/
+layersModel/
 .ipynb_checkpoints
 .DS_STORE
